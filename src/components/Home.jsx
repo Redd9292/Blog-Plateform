@@ -1,18 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebase-config';
+import { collection, getDocs } from 'firebase/firestore/lite';
 
 export function Home() {
     const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchPosts = async () => {
-            const response = db.collection('posts').get();
-            const data = await response.get();
-            const postData = data.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-            setPosts(postData);
+          try {
+            const querySnapshot = await getDocs(collection(db, 'posts'));
+            const postsData = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+            setPosts(postsData);
+            setLoading(false);
+          } catch (err) {
+            setError(err.message);
+            setLoading(false);
+          }
         };
         fetchPosts();
     }, []);
+
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>Error: {error}</div>;
 
     return (
         <div>
