@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { db, auth } from '../firebase-config';
+import { db } from '../firebase-config';
+import { collection, addDoc } from 'firebase/firestore';  
 
 export function CreatePost() {
     const [title, setTitle] = useState('');
@@ -7,22 +8,23 @@ export function CreatePost() {
 
     const submitPost = async () => {
         try {
-            await db.collection('posts').add({
+            console.log({ title, content, createAt: new Date() });
+            await addDoc(collection(db, 'posts'), {
                 title: title,
                 content: content,
-                createAt: new Date()
+                createAt: new Date()  
             });
             console.log('Post created');
-        }catch (error) {
+        } catch (error) {
             console.error('Error creating post:', error.message);
         }
     };
 
-    return(
+    return (
         <div>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" />
             <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="Content" />
-            <button onClick={submitPost}>Submit Post</button>
+            <button onClick={submitPost}>Post</button>
         </div>
-    )
+    );
 }

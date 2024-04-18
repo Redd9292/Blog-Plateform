@@ -1,7 +1,6 @@
 import { db } from "../config/firebase-config";
 import { collection, getDocs } from "firebase/firestore";
 
-// Function to fetch data from a Firestore collection
 export async function useFirestore(collectionName) {
   try {
     const querySnapshot = await getDocs(collection(db, collectionName));
