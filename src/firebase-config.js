@@ -14,8 +14,7 @@ const firebaseConfig = {
 
 // Correctly initialize Firebase using the modular SDK
 const firebaseApp = initializeApp(firebaseConfig);
-
-const db = getFirestore(firebaseApp);
 const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
 
 export { db, auth };

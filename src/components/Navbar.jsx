@@ -1,7 +1,22 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { auth } from '../firebase-config';
+import { signOut } from 'firebase/auth';
 
 const Navbar = () => {
+  const { currentUser } = useAuth(); 
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate('/login');  
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
   return (
     <div className="navbar bg-base-100">
       <div className="navbar-start">
@@ -14,7 +29,12 @@ const Navbar = () => {
           <ul tabIndex="0" className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
             <li><Link to="/">Home</Link></li>
             <li><Link to="/create-post">Create Post</Link></li>
-            <li><Link to="/login">Login</Link></li>
+            {/* Show login or logout based on auth state */}
+            {currentUser ? (
+              <li><button onClick={handleLogout}>Log Out</button></li>
+            ) : (
+              <li><Link to="/login">Login</Link></li>
+            )}
           </ul>
         </div>
         <Link to="/" className="btn btn-ghost normal-case text-xl">Blogit</Link>
@@ -23,11 +43,17 @@ const Navbar = () => {
         <ul className="menu menu-horizontal p-0">
           <li><Link to="/">Home</Link></li>
           <li><Link to="/create-post">Create Post</Link></li>
-          <li><Link to="/login">Login</Link></li>
+          {/* Conditional rendering based on login state */}
+          {currentUser ? (
+            <li><button onClick={handleLogout}>Log Out</button></li>
+          ) : (
+            <li><Link to="/login">Login</Link></li>
+          )}
         </ul>
       </div>
       <div className="navbar-end">
-        <Link to="/register" className="btn">Sign up</Link>
+        {/* Hide 'Sign up' if the user is logged in */}
+        {!currentUser && <Link to="/register" className="btn">Sign up</Link>}
       </div>
     </div>
   );
